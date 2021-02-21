@@ -83,3 +83,12 @@ class MetaImages:
     def cuda(self, num = 0):
         device = torch.device(f"cuda:{num}")
         self.to(device)
+
+
+def collate_fn(batch):
+    """
+    Split batch from [(img_1, target_1), ..., (img_n, target_n)]]
+    to
+    ((img_1, ..., img_n), (target_1, ..., target_n))
+    """
+    return tuple(zip(*batch))
