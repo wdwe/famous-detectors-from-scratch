@@ -4,6 +4,8 @@ import torchvision
 
 
 class FasterRCNN_res50(nn.Module):
+    stride = 32
+    feature_map_planes = 2048
     def __init__(self):
         super().__init__()
         r = torchvision.models.resnet50(pretrained = True)
