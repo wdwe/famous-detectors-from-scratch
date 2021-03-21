@@ -14,7 +14,7 @@ class RPN(nn.Module):
     def _compute_loss(self, objness, bbox_regress, anchors, targets):
         batch_size = len(objness)
         for i in range(batch_size):
-
+            pass
 
 
 
