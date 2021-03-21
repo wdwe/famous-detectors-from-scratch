@@ -66,11 +66,11 @@ if __name__ == "__main__":
     BATCH_SIZE = 32
     NUM_WORKERS = 4
 
-    dataset = CocoDetDataset("../datasets/coco2017/", split = "val")
+    dataset = CocoDetDataset("../coco_data/", split = "val")
     dataloader = DataLoader(dataset,batch_size = BATCH_SIZE, shuffle = False, num_workers = NUM_WORKERS, collate_fn = utils.collate_fn)
 
     model = torchvision.models.detection.fasterrcnn_resnet50_fpn(pretrained = True)
     model.cuda()
-    coco_eval = CocoDetEval("../datasets/coco2017/annotations/instances_val2017.json")
+    coco_eval = CocoDetEval("../coco_data/annotations/instances_val2017.json")
     # coco_eval.evaluate_model(model, dataloader, "tests", "try.json")
-    print(coco_eval.evaluate_results("./tests/try.json"))
+    # print(coco_eval.evaluate_results("./tests/try.json"))
