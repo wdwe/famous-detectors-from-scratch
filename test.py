@@ -13,7 +13,7 @@ if __name__ == "__main__":
     BATCH_SIZE = 2
     NUM_WORKERS = 4
 
-    dataset = CocoDetDataset("../coco_data/coco2017/", split = "val")
+    dataset = CocoDetDataset("../coco_data/", split = "val")
     dataloader = DataLoader(dataset,batch_size = BATCH_SIZE, shuffle = False, num_workers = NUM_WORKERS, collate_fn = collate_fn)
     model = FasterRCNN_res50()
     scales = [128, 256, 512]
