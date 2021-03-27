@@ -62,12 +62,13 @@ class CocoDetEval:
 if __name__ == "__main__":
     from datasets import CocoDetDataset
     import torchvision
+    import data_utils
     from torch.utils.data import DataLoader
     BATCH_SIZE = 32
     NUM_WORKERS = 4
 
     dataset = CocoDetDataset("../coco_data/", split = "val")
-    dataloader = DataLoader(dataset,batch_size = BATCH_SIZE, shuffle = False, num_workers = NUM_WORKERS, collate_fn = utils.collate_fn)
+    dataloader = DataLoader(dataset,batch_size = BATCH_SIZE, shuffle = False, num_workers = NUM_WORKERS, collate_fn = data_utils.collate_fn)
 
     model = torchvision.models.detection.fasterrcnn_resnet50_fpn(pretrained = True)
     model.cuda()
