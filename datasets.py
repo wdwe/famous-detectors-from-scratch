@@ -20,14 +20,21 @@ class CocoDetDataset:
     def _collate_coco_anns(self, anns):
         target = {}
         bboxes = []
+        labels = []
         for ann in anns:
             bboxes.append(ann["bbox"])
+            labels.append(ann["category_id"])
         bboxes = torch.tensor(bboxes)
+        labels = torch.tensor(labels)
         # convert from (x, y, w, h) to (xmin, ymin, xmax, ymax)
-        bboxes[:, 2] = bboxes[:, 0] + bboxes[:, 2]
-        bboxes[:, 3] = bboxes[:, 1] + bboxes[:, 3]
+        if len(labels) > 0:
+            bboxes[:, 2] = bboxes[:, 0] + bboxes[:, 2]
+            bboxes[:, 3] = bboxes[:, 1] + bboxes[:, 3]
+        else:
+            print(labels)
+            print(bboxes)
         target["bbox"] = bboxes
-
+        target["labels"] = labels
         return target
 
     def __getitem__(self, idx):
@@ -59,5 +66,10 @@ class CocoDetDataset:
         return len(self.ids)
 
 if __name__ == "__main__":
-    dataset = CocoDetDataset("../datasets/coco2017", None, "val")
-    dataset.test()
+    dataset = CocoDetDataset("../datasets/coco2017", "val")
+    min_label = 20
+    for i in range(len(dataset)):
+        _, target, _ = dataset[i]
+        if len(target["labels"]) > 0 and min(target["labels"]) < min_label:
+            min_label = min(target["labels"])
+    print(min_label)
