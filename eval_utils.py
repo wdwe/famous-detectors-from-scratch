@@ -4,7 +4,6 @@ import torch
 import json
 import os
 import os.path as osp
-import utils
 from tqdm import tqdm
 
 class CocoDetEval:
@@ -67,11 +66,19 @@ if __name__ == "__main__":
     BATCH_SIZE = 32
     NUM_WORKERS = 4
 
-    dataset = CocoDetDataset("../coco_data/", split = "val")
+    dataset = CocoDetDataset("../datasets/coco2017/", split = "val")
     dataloader = DataLoader(dataset,batch_size = BATCH_SIZE, shuffle = False, num_workers = NUM_WORKERS, collate_fn = data_utils.collate_fn)
 
     model = torchvision.models.detection.fasterrcnn_resnet50_fpn(pretrained = True)
-    model.cuda()
+    print(model)
+    a = torch.randn((1, 3, 640, 640))
+    output = model.backbone(a)
+    for name, parameter in model.backbone.named_parameters():
+        print(name)
+    for k in output:
+        print(output[k].shape)
+    exit()
+    # model.cuda()
     coco_eval = CocoDetEval("../coco_data/annotations/instances_val2017.json")
     # coco_eval.evaluate_model(model, dataloader, "tests", "try.json")
     # print(coco_eval.evaluate_results("./tests/try.json"))
