@@ -18,6 +18,9 @@ class Anchor(nn.Module):
         self._cache = {}
 
     def gen_base_anchor(self, scales, ratios):
+        """
+        Return base anchor in the shape of [len(scales) * len(ratios), 4] where the last dimension is [0, 0, w, h]
+        """
         anchor_dims = []
         for s, r in product(scales, ratios):
             w = s * r
@@ -45,6 +48,14 @@ class Anchor(nn.Module):
         return grid
 
     def get_anchors(self, features, stride):
+        """
+        Args:
+            features: the input feature map
+            stride: the multiplied final stride of the network
+        Returns:
+            anchor of shape [len(scales) * len(ratios), 4, feat_h, feat_w],
+            where the 4 is [cx, cy, w, h]
+        """
         feat_h, feat_w = tuple(features.shape)[-2:]
         device = features.device
         anchor_key = (feat_h, feat_w, stride, device)
@@ -52,14 +63,22 @@ class Anchor(nn.Module):
             grid = self.gen_grid(feat_h, feat_w, stride)
             pad = torch.zeros_like(grid)
             grid = torch.cat((grid, pad), dim = -1)
+            # anchors is of shape [feat_h, feat_w, len(scales) * len(ratios), 4]
+            # The last dimension is the [x, y, w, h] --> bbox on the original image
             anchors = grid[..., None, :] + self.base_anchors
             
             anchors = anchors.to(features.device)
-            anchors = anchors.permute((2, 3, 0, 1))
+            # permute to [len(scales) * len(ratios), feat_h, feat_w, 4]
+            anchors = anchors.permute((2, 0, 1, 3))
             self._cache[anchor_key] = anchors
         return self._cache[anchor_key]
 
     def forward(self, features):
+        """
+        Given the features of shape [batch_size, channels, feat_h, feat_w],
+        return an anchor of shape [batch_size, len(scales) * len(ratios), feat_h, feat_w, 4],
+        where the 4 is [cx, cy, w, h]
+        """
         batch_size = features.shape[0]
         anchors = self.get_anchors(features, self.stride)
         anchors = torch.stack([anchors] * batch_size, dim = 0)
