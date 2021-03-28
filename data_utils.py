@@ -63,8 +63,8 @@ class MetaImages:
         h *= scale
         w *= scale
         size = (h, w)
-        image =F.resize(image, size)
-        # pad to right or left
+        image = F.resize(image, size)
+        # pad to right or bottom
         image = F.pad(image, (0, 0, W - w, H - h))
 
         return image, scale
