@@ -3,15 +3,13 @@ import torch.nn as nn
 import torchvision
 
 
-class FasterRCNN_res50(nn.Module):
-    stride = 32
-    feature_map_planes = 2048
+class FasterRCNN_vgg16_bn(nn.Module):
+    stride = 16
+    feature_map_planes = 512
     def __init__(self):
         super().__init__()
-        r = torchvision.models.resnet50(pretrained = True)
-        self.backbone = nn.ModuleList(
-            [r.conv1, r.bn1, r.relu, r.maxpool, r.layer1, r.layer2, r.layer3, r.layer4]
-        )
+        vgg16 = torchvision.models.vgg16_bn(pretrained = True)
+        self.backbone = nn.ModuleList(*list(vgg16.features.children())[:-1])
 
     def extract_features(self, images):
         for m in self.backbone:
@@ -21,7 +19,7 @@ class FasterRCNN_res50(nn.Module):
     def forward(self, meta_img):
         images = meta_img.images
         target = meta_img.targets
-        features = self.extract_features(images)
+        features = self.backbone(images)
         
         return features
 
