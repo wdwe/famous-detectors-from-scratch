@@ -9,7 +9,7 @@ class FasterRCNN_vgg16_bn(nn.Module):
     def __init__(self):
         super().__init__()
         vgg16 = torchvision.models.vgg16_bn(pretrained = True)
-        self.backbone = nn.ModuleList(*list(vgg16.features.children())[:-1])
+        self.backbone = nn.ModuleList(list(vgg16.features.children())[:-1])
 
     def extract_features(self, images):
         for m in self.backbone:
@@ -19,7 +19,7 @@ class FasterRCNN_vgg16_bn(nn.Module):
     def forward(self, meta_img):
         images = meta_img.images
         target = meta_img.targets
-        features = self.backbone(images)
+        features = self.extract_features(images)
         
         return features
 
