@@ -29,13 +29,8 @@ if __name__ == "__main__":
         meta_img = MetaImages(images, targets)
         # meta_img.cuda()
         features = model(meta_img)
-        objness, bbox_regress, anchors = rpn(features, targets)
-        # print(objness.shape)
-        # print(bbox_regress.shape)
-        # print(anchors.shape)
-        # print(anchors[:, 0, 0])
-        labels, matched_bboxes = rpn.assign_anchors_to_targets(anchors, targets)
-        for j, label in enumerate(labels):
-            print((label >= 0.9).sum())
-            print((matched_bboxes[j].sum(dim=1) > 0.9).sum())
-            print("")
+        bboxes, loss = rpn(features, targets, (640, 640))
+        print(loss)
+        for bbox in bboxes:
+            print(bbox.shape)
+        
